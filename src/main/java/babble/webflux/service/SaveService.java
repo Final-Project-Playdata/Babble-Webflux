@@ -55,9 +55,10 @@ public class SaveService {
 		// 파일명 검증(해킹이나 오류 막기위해)
 		String originalFilename = file.getOriginalFilename();
 		String[] seperatedName = originalFilename.split(".");
-		if (originalFilename.contains("..") || !(seperatedName[0] + "." + seperatedName[2]).equals(seperatedName[0] + ".wav")) {
+		if (originalFilename.contains("..") || !(seperatedName[3].equals("wav"))) {
 			throw new Exception("올바르지 않은 파일명입니다.");
 		}
+		System.out.println(seperatedName.toString());
 
 		// 폴더 생성
 		File uploadPath = new File(uploadFolder + "/" + seperatedName[0], getFolder(seperatedName[1]));

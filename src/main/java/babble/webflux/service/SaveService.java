@@ -22,19 +22,19 @@ public class SaveService {
 		return time.replace("-", File.separator);
 	}
 
-	public void saveImage(MultipartFile file, String username) throws Exception {
+	public void saveImage(MultipartFile file) throws Exception {
 
 		String uploadFolder = "C:/audiotest";
 
 		// 파일명 검증(해킹이나 오류 막기위해)
 		String originalFilename = file.getOriginalFilename();
 		String[] seperatedName = originalFilename.split(".");
-		if (originalFilename.contains("..") || !(seperatedName[0] + "." + seperatedName[2]).equals(username + ".jpeg")) {
+		if (originalFilename.contains("..") || !(seperatedName[0] + "." + seperatedName[2]).equals(seperatedName[0] + ".jpeg")) {
 			throw new Exception("올바르지 않은 파일명입니다.");
 		}
 
 		// 폴더 생성
-		File uploadPath = new File(uploadFolder + "/" + username, getFolder(seperatedName[1]));
+		File uploadPath = new File(uploadFolder + "/" + seperatedName[0], getFolder(seperatedName[1]));
 		if (uploadPath.exists() == false) {
 			uploadPath.mkdirs();
 		}
@@ -48,19 +48,19 @@ public class SaveService {
 
 	}
 
-	public void saveAudio(MultipartFile file, String username) throws Exception {
+	public void saveAudio(MultipartFile file) throws Exception {
 
 		String uploadFolder = "C:/audiotest";
 
 		// 파일명 검증(해킹이나 오류 막기위해)
 		String originalFilename = file.getOriginalFilename();
 		String[] seperatedName = originalFilename.split(".");
-		if (originalFilename.contains("..") || !(seperatedName[0] + "." + seperatedName[2]).equals(username + ".wav")) {
+		if (originalFilename.contains("..") || !(seperatedName[0] + "." + seperatedName[2]).equals(seperatedName[0] + ".wav")) {
 			throw new Exception("올바르지 않은 파일명입니다.");
 		}
 
 		// 폴더 생성
-		File uploadPath = new File(uploadFolder + "/" + username, getFolder(seperatedName[1]));
+		File uploadPath = new File(uploadFolder + "/" + seperatedName[0], getFolder(seperatedName[1]));
 		if (uploadPath.exists() == false) {
 			uploadPath.mkdirs();
 		}

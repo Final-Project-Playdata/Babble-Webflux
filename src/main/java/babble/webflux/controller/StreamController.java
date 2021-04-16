@@ -1,13 +1,16 @@
 package babble.webflux.controller;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import babble.webflux.service.SaveService;
 import babble.webflux.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -16,9 +19,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class StreamController {
 
-	private final StreamService videoStreamService;
-
-	private final SaveService saveService;
+	private final StreamService streamService;
 
 	@GetMapping("index")
 	public String index() {
@@ -26,32 +27,44 @@ public class StreamController {
 		return "index";
 	}
 
-	@GetMapping("audio")
+	@CrossOrigin
+	@GetMapping("audio/{path}")
 	public Mono<ResponseEntity<byte[]>> streamAudio(
 			@RequestHeader(value = "Range", required = false) String httpRangeList, ServerHttpRequest request,
-			@RequestHeader("Path") String path) throws Exception {
+			@PathVariable("path") String path) throws Exception {
 
-		String result = saveService.checkJwt(request);
+//		String result = saveService.checkJwt(request);
+//
+//		System.out.println(path);
+//		if (result.equals("fail")) {
+//			throw new Exception("인증실패");
+//		}
 
-		if (result.equals("fail")) {
-			throw new Exception("인증실패");
-		}
+		path = path.replace("-", "/");
+		System.out.println(path);
 
-		return Mono.just(videoStreamService.streamAudio(path, httpRangeList));
+		return Mono.just(streamService.streamAudio(path, httpRangeList));
 	}
 
 	@GetMapping("image")
 	public Mono<ResponseEntity<byte[]>> streamImage(
-			@RequestHeader(value = "Range", required = false) String httpRangeList, ServerHttpRequest request, @RequestParam("path") String path)
+			@RequestHeader(value = "Range", required = false) String httpRangeList, ServerHttpRequest request)
 			throws Exception {
 
-		String result = saveService.checkJwt(request);
+//		String result = saveService.checkJwt(request);
+//
+//		if (result.equals("fail")) {
+//			throw new Exception("인증실패");
+//		}
+//		String path = "‪C:\\ITstudy\\12.project\\python\\011.jpeg"; //에러발생
+		String path = "C:\\ITstudy\\12.project\\BabbleWebflux\\..\\python\\011.jpeg";
 
-		if (result.equals("fail")) {
-			throw new Exception("인증실패");
-		}
+		Path currentDir = Paths.get("../../"); // currentDir = "."
+		Path fullPath = currentDir.toAbsolutePath(); // fullPath = "/Users/guest/workspace"
 
-		return Mono.just(videoStreamService.streamImage(path, httpRangeList));
+		System.out.println(fullPath);
+		System.out.println(path);
+		return Mono.just(streamService.streamImage(path, httpRangeList));
 	}
 
 }

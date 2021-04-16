@@ -19,13 +19,13 @@ public class SaveController {
 	public String saveAudio(@RequestParam(value = "file", required = false) MultipartFile file,
 			ServerHttpRequest request) throws Exception {
 
-		String result = saveService.checkJwt(request);
+//		String result = saveService.checkJwt(request);
+//
+//		if (result.equals("fail")) {
+//			throw new Exception("인증실패");
+//		}
 
-		if (result.equals("fail")) {
-			throw new Exception("인증실패");
-		}
-
-		saveService.saveAudio(file, result);
+		saveService.saveAudio(file);
 
 		return "success";
 	}
@@ -33,13 +33,13 @@ public class SaveController {
 	@PostMapping("image")
 	public String savetImage(@RequestParam("file") MultipartFile file, ServerHttpRequest request) throws Exception {
 
-		String result = saveService.checkJwt(request);
-
-		if (result.equals("fail")) {
-			throw new Exception("인증실패");
-		}
-
-		saveService.saveImage(file, result);
+//		String result = saveService.checkJwt(request);
+//
+//		if (result.equals("fail")) {
+//			throw new Exception("인증실패");
+//		}
+//
+		saveService.saveImage(file);
 
 		return "success";
 	}

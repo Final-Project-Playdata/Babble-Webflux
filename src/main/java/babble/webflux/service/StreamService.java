@@ -35,6 +35,7 @@ public class StreamService {
 		Long fileSize;
 		try {
 			fileSize = getFileSize(path);
+			System.out.println(fileSize);
 			if (range == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.header(StreamConstants.CONTENT_TYPE, StreamConstants.AUDIO_CONTENT)
@@ -127,6 +128,9 @@ public class StreamService {
 			bufferedOutputStream.flush();
 			byte[] result = new byte[(int) (end - start) + 1];
 			System.arraycopy(bufferedOutputStream.toByteArray(), (int) start, result, 0, result.length);
+			for(int i = 0; i < 10; i++) {
+				System.out.println(result[i]);
+			}
 			return result;
 		}
 	}

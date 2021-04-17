@@ -1,6 +1,7 @@
 package babble.webflux.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -20,6 +21,11 @@ public class StreamService {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	public String getFolder(String time) {
+		String[] seperatedTime = time.split("-");
+		return seperatedTime[0] + "\\" + seperatedTime[1] + "\\" + seperatedTime[2];
+	}
+
 	/**
 	 * Prepare the content.
 	 *
@@ -33,9 +39,12 @@ public class StreamService {
 		long rangeEnd;
 		byte[] data;
 		Long fileSize;
+		String[] seperatedName = path.split("\\.");
+		File uploadPath = new File("C:\\audiotest\\" + seperatedName[0] + "." + seperatedName[1],
+				getFolder(seperatedName[2]));
+		path = uploadPath + "\\" + path;
 		try {
 			fileSize = getFileSize(path);
-			System.out.println(fileSize);
 			if (range == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.header(StreamConstants.CONTENT_TYPE, StreamConstants.AUDIO_CONTENT)
@@ -73,6 +82,10 @@ public class StreamService {
 		long rangeEnd;
 		byte[] data;
 		Long fileSize;
+		String[] seperatedName = path.split("\\.");
+		File uploadPath = new File("C:\\imagetest\\" + seperatedName[0] + "." + seperatedName[1],
+				getFolder(seperatedName[2]));
+		path = uploadPath + "\\" + path;
 		try {
 			fileSize = getFileSize(path);
 			if (range == null) {
@@ -128,9 +141,6 @@ public class StreamService {
 			bufferedOutputStream.flush();
 			byte[] result = new byte[(int) (end - start) + 1];
 			System.arraycopy(bufferedOutputStream.toByteArray(), (int) start, result, 0, result.length);
-			for(int i = 0; i < 10; i++) {
-				System.out.println(result[i]);
-			}
 			return result;
 		}
 	}

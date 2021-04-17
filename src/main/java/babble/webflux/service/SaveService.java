@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,64 +15,62 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import babble.webflux.constants.JwtProperties;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class SaveService {
 
 	public String getFolder(String time) {
-		return time.replace("-", File.separator);
+		String[] seperatedTime = time.split("-");
+		return seperatedTime[0] + "\\" + seperatedTime[1] + "\\" + seperatedTime[2];
 	}
 
-	public void saveImage(MultipartFile file) throws Exception {
+	public Mono<String> saveImage(Flux<FilePart> file) throws Exception {
 
-		String uploadFolder = "C:/audiotest";
+		return file.flatMap(it -> {
+			String uploadFolder = "C:\\imagetest\\";
 
-		// 파일명 검증(해킹이나 오류 막기위해)
-		String originalFilename = file.getOriginalFilename();
-		String[] seperatedName = originalFilename.split(".");
-		if (originalFilename.contains("..") || !(seperatedName[0] + "." + seperatedName[2]).equals(seperatedName[0] + ".jpeg")) {
-			throw new Exception("올바르지 않은 파일명입니다.");
-		}
+			// 파일명 검증(해킹이나 오류 막기위해)
+			String filename = it.filename();
+			if (filename.contains("..")) {
+				return null;
+			}
+			
+			String[] seperatedName = filename.split("\\.");
 
-		// 폴더 생성
-		File uploadPath = new File(uploadFolder + "/" + seperatedName[0], getFolder(seperatedName[1]));
-		if (uploadPath.exists() == false) {
-			uploadPath.mkdirs();
-		}
+			// 폴더 생성
+			File uploadPath = new File(uploadFolder + seperatedName[0] + "." + seperatedName[1],
+					getFolder(seperatedName[2]));
+			if (uploadPath.exists() == false) {
+				uploadPath.mkdirs();
+			}
 
-		// 파일 경로 정리
-		String fileFullPath = uploadPath + "/" + originalFilename;
-
-		// 저장
-		Path saveTO = Paths.get(fileFullPath);
-		Files.copy(file.getInputStream(), saveTO);
+			return it.transferTo(Paths.get(uploadPath + "\\" + it.filename()));
+		}).then(Mono.just("OK"));
 
 	}
 
-	public void saveAudio(MultipartFile file) throws Exception {
+	public Mono<String> saveAudio(Flux<FilePart> file) throws Exception {
+		return file.flatMap(it -> {
+			String uploadFolder = "C:\\audiotest\\";
 
-		String uploadFolder = "C:/audiotest";
+			// 파일명 검증(해킹이나 오류 막기위해)
+			String filename = it.filename();
+			if (filename.contains("..")) {
+				return null;
+			}
+			String[] seperatedName = filename.split("\\.");
 
-		// 파일명 검증(해킹이나 오류 막기위해)
-		String originalFilename = file.getOriginalFilename();
-		String[] seperatedName = originalFilename.split(".");
-		if (originalFilename.contains("..") || !(seperatedName[3].equals("wav"))) {
-			throw new Exception("올바르지 않은 파일명입니다.");
-		}
-		System.out.println(seperatedName.toString());
+			// 폴더 생성
+			File uploadPath = new File(uploadFolder + seperatedName[0] + "." + seperatedName[1],
+					getFolder(seperatedName[2]));
+			if (uploadPath.exists() == false) {
+				uploadPath.mkdirs();
+			}
 
-		// 폴더 생성
-		File uploadPath = new File(uploadFolder + "/" + seperatedName[0], getFolder(seperatedName[1]));
-		if (uploadPath.exists() == false) {
-			uploadPath.mkdirs();
-		}
-
-		// 파일 경로 정리
-		String fileFullPath = uploadPath + "/" + originalFilename;
-
-		// 저장
-		Path saveTO = Paths.get(fileFullPath);
-		Files.copy(file.getInputStream(), saveTO);
+			return it.transferTo(Paths.get(uploadPath + "\\" + it.filename()));
+		}).then(Mono.just("OK"));
 
 	}
 

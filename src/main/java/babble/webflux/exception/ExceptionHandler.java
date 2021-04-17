@@ -8,6 +8,7 @@ public class ExceptionHandler {
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
 	public String handleException(Exception exception, Model model) {
+		exception.printStackTrace();
 		model.addAttribute("exception", exception);
 		return "errors";
 	}

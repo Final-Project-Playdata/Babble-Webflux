@@ -1,7 +1,5 @@
 package babble.webflux.controller;
 
-import java.nio.file.Paths;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -40,11 +38,10 @@ public class SaveController {
 	public Mono<String> savetImage(@RequestPart("image") Flux<FilePart> file, ServerHttpRequest request)
 			throws Exception {
 
-//		String result = saveService.checkJwt(request);
-//
-//		if (result.equals("fail")) {
-//			throw new Exception("인증실패");
-//		}
+		String result = saveService.checkJwt(request);
+		if (result.equals("fail")) {
+			throw new Exception("인증실패");
+		}
 
 		return saveService.saveImage(file);
 	}

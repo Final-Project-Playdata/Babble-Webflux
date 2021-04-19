@@ -1,11 +1,6 @@
 package babble.webflux.controller;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +29,10 @@ public class StreamController {
 			@RequestHeader(value = "Range", required = false) String httpRangeList, @PathVariable("path") String path)
 			throws Exception {
 
+		if (path == null) {
+			throw new Exception("경로가 존재하지 않습니다.");
+		}
+
 		return Mono.just(streamService.streamAudio(path, httpRangeList));
 	}
 
@@ -41,6 +40,10 @@ public class StreamController {
 	public Mono<ResponseEntity<byte[]>> streamImage(
 			@RequestHeader(value = "Range", required = false) String httpRangeList, @PathVariable("path") String path)
 			throws Exception {
+
+		if (path == null) {
+			throw new Exception("경로가 존재하지 않습니다.");
+		}
 
 		return Mono.just(streamService.streamImage(path, httpRangeList));
 	}

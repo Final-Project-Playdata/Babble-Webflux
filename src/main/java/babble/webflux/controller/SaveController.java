@@ -39,6 +39,7 @@ public class SaveController {
 			throws Exception {
 
 		String result = saveService.checkJwt(request);
+		
 		if (result.equals("fail")) {
 			throw new Exception("인증실패");
 		}

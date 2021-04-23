@@ -1,5 +1,7 @@
 package babble.webflux.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +18,9 @@ import reactor.core.publisher.Mono;
 public class StreamController {
 
 	private final StreamService streamService;
-
-	@GetMapping("index")
-	public String index() {
-		System.out.println("index");
-		return "index";
-	}
-
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@CrossOrigin
 	@GetMapping("audio/{path}")
 	public Mono<ResponseEntity<byte[]>> streamAudio(
@@ -32,6 +30,8 @@ public class StreamController {
 		if (path == null) {
 			throw new Exception("경로가 존재하지 않습니다.");
 		}
+		
+		logger.info("Audio : {}", path);
 
 		return Mono.just(streamService.streamAudio(path, httpRangeList));
 	}
@@ -45,6 +45,8 @@ public class StreamController {
 			throw new Exception("경로가 존재하지 않습니다.");
 		}
 
+		logger.info("Image : {}", path);
+		
 		return Mono.just(streamService.streamImage(path, httpRangeList));
 	}
 
